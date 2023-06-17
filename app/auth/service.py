@@ -3,6 +3,8 @@ from pydantic import BaseSettings
 from app.config import database
 
 from .adapters.jwt_service import JwtService
+from .adapters.s3_service import S3Service
+from .repository.favourites_repository import FavouritesRepository
 from .repository.repository import AuthRepository
 
 
@@ -21,6 +23,8 @@ class Service:
         repository: AuthRepository,
         jwt_svc: JwtService,
     ):
+        self.s3_service = S3Service()
+        self.favourite_repository = FavouritesRepository(database)
         self.repository = repository
         self.jwt_svc = jwt_svc
 

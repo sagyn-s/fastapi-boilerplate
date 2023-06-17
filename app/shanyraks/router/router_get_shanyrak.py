@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from fastapi import Depends, Response
+from fastapi import Depends, HTTPException, Response
 from pydantic import Field
 
 from app.auth.adapters.jwt_service import JWTData
@@ -21,6 +21,7 @@ class GetShanyrakResponse(AppModel):
     description: str
     user_id: Any
     media: List[str] = []
+    location: dict
 
 
 @router.get("/{shanyrak_id:str}", response_model=GetShanyrakResponse)
@@ -30,6 +31,10 @@ def get_shanyrak(
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
     shanyrak = svc.repository.get_shanyrak(shanyrak_id)
+    if not shanyrak:
+        raise HTTPException(status_code=404, detail=f"Could find shanyrak with id {shanyrak_id}")
+    address = shanyrak["address"]
+    shanyrak["location"] = svc.here_service.get_coordinates(address)
     if shanyrak is None:
         return Response(status_code=404)
     return GetShanyrakResponse(**shanyrak)

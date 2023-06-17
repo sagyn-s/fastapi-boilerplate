@@ -48,7 +48,6 @@ def update_shanyrak_photos(
         media.append(url)
     svc.repository.update_shanyrak(shanyrak_id=shanyrak_id, user_id=jwt_data.user_id, data={"media": media})
     return media
-#648af5359e4dedf63e49c829
 
 
 @router.delete("/{shanyrak_id:str}/media")
